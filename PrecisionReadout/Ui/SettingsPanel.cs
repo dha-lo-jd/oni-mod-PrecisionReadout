@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace PrecisionReadout.Ui;
 
-// A small draggable IMGUI window (Ctrl+F8). Changes apply immediately and are saved by Settings.
+// A small draggable IMGUI window (Ctrl+F7). Changes apply immediately and are saved by Settings.
 public sealed class SettingsPanel : MonoBehaviour
 {
     private const int WindowId = 0x50524552; // "PREC"
@@ -33,11 +33,29 @@ public sealed class SettingsPanel : MonoBehaviour
         imageObject.SetActive(false);
     }
 
+    // True while the pointer is over the open window; the camera's wheel zoom is suppressed then (see CameraPatches).
+    internal static bool PointerOver { get; private set; }
+
+    // Row rectangles (window-local GUI units) recorded while drawing, used to route the wheel to the row under the pointer.
+    private Rect massRow, temperatureRow;
+
     private void Update()
     {
         var ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-        if (ctrl && Input.GetKeyDown(KeyCode.F8)) open = !open;
+        if (ctrl && Input.GetKeyDown(KeyCode.F7)) open = !open;
         SyncBlocker();
+
+        var scale = Mathf.Max(1f, Screen.height / 1080f);
+        var mouse = new Vector2(Input.mousePosition.x / scale, (Screen.height - Input.mousePosition.y) / scale);
+        PointerOver = open && window.Contains(mouse);
+        if (!PointerOver) return;
+
+        var wheel = Input.mouseScrollDelta.y;
+        if (wheel == 0f) return;
+        var step = wheel > 0f ? 1 : -1;
+        var local = mouse - window.position;
+        if (massRow.Contains(local)) Settings.MassDigits += step;
+        else if (temperatureRow.Contains(local)) Settings.TemperatureDigits += step;
     }
 
     private void SyncBlocker()
@@ -62,8 +80,8 @@ public sealed class SettingsPanel : MonoBehaviour
 
     private void Draw(int id)
     {
-        Digits((string)STRINGS.UI.MASS, Settings.MassDigits, v => Settings.MassDigits = v);
-        Digits((string)STRINGS.UI.TEMPERATURE, Settings.TemperatureDigits, v => Settings.TemperatureDigits = v);
+        Digits((string)STRINGS.UI.MASS, Settings.MassDigits, v => Settings.MassDigits = v, ref massRow);
+        Digits((string)STRINGS.UI.TEMPERATURE, Settings.TemperatureDigits, v => Settings.TemperatureDigits = v, ref temperatureRow);
 
         var dim = GUILayout.Toggle(Settings.DimUntrusted, (string)STRINGS.UI.DIM);
         if (dim != Settings.DimUntrusted) Settings.DimUntrusted = dim;
@@ -73,7 +91,7 @@ public sealed class SettingsPanel : MonoBehaviour
         GUI.DragWindow();
     }
 
-    private static void Digits(string label, int value, System.Action<int> set)
+    private static void Digits(string label, int value, System.Action<int> set, ref Rect row)
     {
         GUILayout.BeginHorizontal();
         GUILayout.Label(label, GUILayout.Width(190f));
@@ -81,6 +99,7 @@ public sealed class SettingsPanel : MonoBehaviour
         GUILayout.Label(shown, GUILayout.Width(30f));
         var next = Mathf.RoundToInt(GUILayout.HorizontalSlider(value, 0f, Settings.MaxDigits, GUILayout.Width(90f)));
         GUILayout.EndHorizontal();
+        if (Event.current.type == EventType.Repaint) row = GUILayoutUtility.GetLastRect();
         if (next != value) set(next);
     }
 }

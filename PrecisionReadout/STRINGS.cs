@@ -11,6 +11,6 @@ public static class STRINGS
         public static LocString DIM = "Dim digits beyond float precision";
         public static LocString OFF = "off";
         public static LocString CLOSE = "Close";
-        public static LocString HINT = "0 = vanilla display. Toggle: Ctrl+F8";
+        public static LocString HINT = "0 = vanilla display. Toggle: Ctrl+F7";
     }
 }

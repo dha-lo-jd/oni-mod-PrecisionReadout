@@ -37,5 +37,5 @@ msgid "Close"
 msgstr "閉じる"
 
 msgctxt "PrecisionReadout.STRINGS.UI.HINT"
-msgid "0 = vanilla display. Toggle: Ctrl+F8"
-msgstr "0 = バニラ表示。開閉: Ctrl+F8"
+msgid "0 = vanilla display. Toggle: Ctrl+F7"
+msgstr "0 = バニラ表示。開閉: Ctrl+F7"
