@@ -15,7 +15,7 @@ internal static class ExactFormat
     {
         if (double.IsNaN(value) || double.IsInfinity(value))
             return value.ToString(CultureInfo.CurrentCulture);
-        digits = Math.Max(0, Math.Min(10, digits));
+        digits = Math.Max(0, Math.Min(Settings.MaxDigits, digits));
 
         var negative = value < 0;
         var bits = BitConverter.DoubleToInt64Bits(Math.Abs(value));
@@ -39,7 +39,7 @@ internal static class ExactFormat
             var shift = -e;
             if (shift > 60)
             {
-                // Dropping bits below 2^-60 changes the result by < 1e-18, far below the 10 digits offered.
+                // Dropping bits below 2^-60 changes the result by < 1e-18, only visible past the 18th decimal, and only for values below ~1e-11 (not seen in game).
                 var drop = shift - 60;
                 mantissa = drop >= 64 ? 0UL : mantissa >> drop;
                 shift = 60;

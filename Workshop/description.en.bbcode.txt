@@ -1,12 +1,12 @@
 [h1]Precision Readout[/h1]
 
-Shows [b]mass[/b] and [b]temperature[/b] with as many decimal places as you want (up to 10) in the hover card and the info panel. Change the number of digits on the fly in a small in-game window and see it take effect immediately.
+Shows [b]mass[/b] and [b]temperature[/b] with as many decimal places as you want (up to 30) in the hover card and the info panel. Change the number of digits on the fly in a small in-game window and see it take effect immediately.
 
 It only changes how numbers are displayed: nothing in the colony changes.
 
 [h2]Features[/h2]
 [list]
-[*] Press [b]Ctrl+F7[/b] (the default; see Notes) to open the settings window. Set the decimal places of [b]mass[/b] and [b]temperature[/b] separately, from 0 to 10. [b]0 is the normal vanilla display[/b] (the default)
+[*] Press [b]Ctrl+F7[/b] (the default; see Notes) to open the settings window. Set the decimal places of [b]mass[/b] and [b]temperature[/b] separately, from 0 to 30. [b]0 is the normal vanilla display[/b] (the default)
 [*] Changes apply [b]immediately[/b]. Hover over a tile and watch the digits grow or shrink. The window can be dragged, and the [b]mouse wheel[/b] over a row changes its digits
 [*] Applies to the [b]hover card[/b] (tiles, items, backwall) and the [b]info panel[/b] (the mass and temperature of the selected tile or item, and the contents of storage)
 [*] Mass is shown in [b]kg[/b] only, with no automatic switching to g / mg / t, so values are easy to compare

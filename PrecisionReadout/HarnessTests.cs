@@ -81,6 +81,16 @@ internal static class HarnessTests
     [HarnessTest(Name = "precisionreadout.mass_digits", Tags = "precisionreadout", RequiresGame = false)]
     public static void MassDigits()
     {
+        WithSettings(30, 0, () =>
+        {
+            Scope.Enter();
+            try
+            {
+                // 0.1f is exactly 0.100000001490116119384765625.
+                Check.Equal("0.100000001490116119384765625000" + (string)STRINGS_KG(), GameUtil.GetFormattedMass(0.1f), "0.1f at 30 digits");
+            }
+            finally { Scope.Exit(); }
+        });
         WithSettings(10, 0, () =>
         {
             Scope.Enter();

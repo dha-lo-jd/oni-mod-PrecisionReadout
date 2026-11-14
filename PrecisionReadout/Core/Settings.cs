@@ -15,7 +15,7 @@ internal static class Settings
         public bool dimUntrusted = true;
     }
 
-    internal const int MaxDigits = 10;
+    internal const int MaxDigits = 30;
 
     private static Data data = new Data();
 
