@@ -13,7 +13,7 @@ public static class SurfaceScopePatch
     {
         yield return AccessTools.Method(typeof(SelectToolHoverTextCard), nameof(SelectToolHoverTextCard.UpdateHoverElements));
         yield return AccessTools.Method(typeof(SimpleInfoScreen), "RefreshStoragePanel");
-        yield return AccessTools.Method(typeof(SimpleInfoScreen), "ForgeNameAndTooltipForStoredItem");
+        yield return AccessTools.Method(typeof(SimpleInfoScreen), "BuildDisplayStrings");
         yield return AccessTools.Method(typeof(SimpleInfoScreen), "OnStorageCollapsibleRowExpanded");
     }
 
