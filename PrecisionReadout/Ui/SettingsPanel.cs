@@ -9,6 +9,22 @@ public sealed class SettingsPanel : MonoBehaviour
     private Rect window = new Rect(40f, 120f, 330f, 150f);
     private bool open;
 
+    private static Texture2D backing;
+
+    private static Texture2D Backing
+    {
+        get
+        {
+            if (backing == null)
+            {
+                backing = new Texture2D(1, 1, TextureFormat.RGBA32, false) { hideFlags = HideFlags.HideAndDontSave };
+                backing.SetPixel(0, 0, new Color(0.13f, 0.15f, 0.20f, 1f));
+                backing.Apply();
+            }
+            return backing;
+        }
+    }
+
     // IMGUI is invisible to the EventSystem, so the game's tools would still receive clicks made on the window.
     // An invisible uGUI image over the same rectangle makes EventSystem.IsPointerOverGameObject() true there.
     private RectTransform blocker;
@@ -74,6 +90,8 @@ public sealed class SettingsPanel : MonoBehaviour
         var scale = Mathf.Max(1f, Screen.height / 1080f);
         var old = GUI.matrix;
         GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+        // The default window skin is translucent, so text behind it shows through. Paint a solid backing under it.
+        GUI.DrawTexture(window, Backing);
         window = GUILayout.Window(WindowId, window, Draw, (string)STRINGS.UI.TITLE, GUILayout.Width(330f));
         GUI.matrix = old;
     }
