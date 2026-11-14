@@ -1,0 +1,32 @@
+[h1]Precision Readout[/h1]
+
+Shows [b]mass[/b] and [b]temperature[/b] with as many decimal places as you want (up to 10) in the hover card and the info panel. Change the number of digits on the fly in a small in-game window and see it take effect immediately.
+
+It only changes how numbers are displayed: nothing in the colony changes.
+
+[h2]Features[/h2]
+[list]
+[*] Press [b]Ctrl+F7[/b] to open the settings window. Set the decimal places of [b]mass[/b] and [b]temperature[/b] separately, from 0 to 10. [b]0 is the normal vanilla display[/b] (the default)
+[*] Changes apply [b]immediately[/b]. Hover over a tile and watch the digits grow or shrink. The window can be dragged, and the [b]mouse wheel[/b] over a row changes its digits
+[*] Applies to the [b]hover card[/b] (tiles, items, backwall) and the [b]info panel[/b] (the mass and temperature of the selected tile or item, and the contents of storage)
+[*] Mass is shown in [b]kg[/b] only, with no automatic switching to g / mg / t, so values are easy to compare
+[*] Temperature is converted from Kelvin to °C / °F in [b]double precision[/b]; the vanilla conversion uses single precision and loses digits
+[*] Digits beyond what the game can actually store are [b]dimmed[/b] (can be turned off)
+[*] The setting is saved and restored the next time you play
+[*] English and Japanese
+[/list]
+
+[h2]About the digits[/h2]
+The game keeps mass and temperature as single-precision floating point numbers, which hold only about [b]7 significant digits[/b]. This mod prints the [b]exact value[/b] the game holds, so digits after the 7th are not padding: they are the real stored value, including the tiny errors of the simulation. They are dimmed to tell them apart from the trustworthy digits.
+
+[h2]Notes[/h2]
+[list]
+[*] Safe to add to or remove from existing saves; nothing is written to the save file.
+[*] Only the hover card and the info panel are changed. The status bar, tooltips, overlays and the like keep the vanilla display.
+[*] Per-second and per-cycle rates, and the pound setting, keep the vanilla display.
+[*] While the settings window is under the mouse pointer, clicks and the wheel do not reach the game behind it.
+[*] The hotkey is not rebindable (Ctrl+F7 has no vanilla binding).
+[/list]
+
+[h2]Source[/h2]
+[url=https://github.com/dha-lo-jd/oni-mod-PrecisionReadout]GitHub[/url] (MIT License)

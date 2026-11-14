@@ -4,6 +4,7 @@
 // Needs HarnessDllPath in Local.Build.props (Check / Wait come from the harness assembly).
 using System;
 using System.Linq;
+using Gravitas.TestHarness.Core;
 using Gravitas.TestHarness;
 using HarmonyLib;
 
@@ -97,6 +98,49 @@ internal static class HarnessTests
         misc.ElementalMass.GetName(null);
         Check.True(!Scope.Active, "scope still open after StatusItem.GetName");
         Check.NoLogErrors();
+    }
+
+    // Not a check: takes the Workshop thumbnail source shots (hover card at 10 digits, with and without the settings window).
+    //   probe.py run --project <this repo> --tests '{"tags":["precisionreadout-shot"]}'
+    // The shots land in the run's screenshots folder.
+    [HarnessTest(Name = "precisionreadout.shoot_thumbnail", Tags = "precisionreadout-shot", TimeoutSeconds = 120)]
+    public static System.Collections.IEnumerator ShootThumbnail()
+    {
+        // The test save has no suitable open water, so make a tile with an uneven mass right at the base.
+        // Away from the duplicants, so their hover card does not cover the tile's card.
+        var (hx, hy) = Arrange.XY(Arrange.HomeCell());
+        var cell = Arrange.Cell(hx + 9, hy);
+        Arrange.SetElement(cell, SimHashes.Water, 1234.5678f, 300.15f);
+        yield return Wait.Ticks(5);
+
+        var oldMass = Settings.MassDigits;
+        var oldTemperature = Settings.TemperatureDigits;
+        var oldDim = Settings.DimUntrusted;
+        var panel = UnityEngine.Object.FindObjectOfType<Ui.SettingsPanel>();
+        var openField = AccessTools.Field(typeof(Ui.SettingsPanel), "open");
+        try
+        {
+            Settings.DimUntrusted = true;
+            Settings.MassDigits = 10;
+            Settings.TemperatureDigits = 10;
+            Play.Hover(cell);
+            for (var i = 0; i < 30; i++) yield return null;
+            Screenshot.Capture("hover-card");
+            for (var i = 0; i < 30; i++) yield return null;
+
+            if (panel != null && openField != null) openField.SetValue(panel, true);
+            for (var i = 0; i < 30; i++) yield return null;
+            Screenshot.Capture("hover-card-with-panel");
+            for (var i = 0; i < 30; i++) yield return null;
+        }
+        finally
+        {
+            if (panel != null && openField != null) openField.SetValue(panel, false);
+            Play.ReleaseMouse();
+            Settings.MassDigits = oldMass;
+            Settings.TemperatureDigits = oldTemperature;
+            Settings.DimUntrusted = oldDim;
+        }
     }
 
     private static string STRINGS_KG() => (string)global::STRINGS.UI.UNITSUFFIXES.MASS.KILOGRAM;
