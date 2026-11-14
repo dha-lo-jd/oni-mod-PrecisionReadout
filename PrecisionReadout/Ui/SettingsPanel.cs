@@ -1,0 +1,86 @@
+using UnityEngine;
+
+namespace PrecisionReadout.Ui;
+
+// A small draggable IMGUI window (Ctrl+F8). Changes apply immediately and are saved by Settings.
+public sealed class SettingsPanel : MonoBehaviour
+{
+    private const int WindowId = 0x50524552; // "PREC"
+    private Rect window = new Rect(40f, 120f, 330f, 150f);
+    private bool open;
+
+    // IMGUI is invisible to the EventSystem, so the game's tools would still receive clicks made on the window.
+    // An invisible uGUI image over the same rectangle makes EventSystem.IsPointerOverGameObject() true there.
+    private RectTransform blocker;
+
+    private void Awake()
+    {
+        var canvasObject = new GameObject("PrecisionReadoutBlocker", typeof(RectTransform));
+        canvasObject.transform.SetParent(transform, false);
+        var canvas = canvasObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = short.MaxValue;
+        canvasObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+        var imageObject = new GameObject("Blocker", typeof(RectTransform));
+        imageObject.transform.SetParent(canvasObject.transform, false);
+        var image = imageObject.AddComponent<UnityEngine.UI.Image>();
+        image.color = new Color(0f, 0f, 0f, 0f);
+        image.raycastTarget = true;
+        blocker = imageObject.GetComponent<RectTransform>();
+        blocker.anchorMin = blocker.anchorMax = Vector2.zero;
+        blocker.pivot = Vector2.zero;
+        imageObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        var ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        if (ctrl && Input.GetKeyDown(KeyCode.F8)) open = !open;
+        SyncBlocker();
+    }
+
+    private void SyncBlocker()
+    {
+        if (blocker == null) return;
+        if (blocker.gameObject.activeSelf != open) blocker.gameObject.SetActive(open);
+        if (!open) return;
+        var scale = Mathf.Max(1f, Screen.height / 1080f);
+        blocker.sizeDelta = new Vector2(window.width * scale, window.height * scale);
+        blocker.anchoredPosition = new Vector2(window.x * scale, Screen.height - (window.y + window.height) * scale);
+    }
+
+    private void OnGUI()
+    {
+        if (!open) return;
+        var scale = Mathf.Max(1f, Screen.height / 1080f);
+        var old = GUI.matrix;
+        GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+        window = GUILayout.Window(WindowId, window, Draw, (string)STRINGS.UI.TITLE, GUILayout.Width(330f));
+        GUI.matrix = old;
+    }
+
+    private void Draw(int id)
+    {
+        Digits((string)STRINGS.UI.MASS, Settings.MassDigits, v => Settings.MassDigits = v);
+        Digits((string)STRINGS.UI.TEMPERATURE, Settings.TemperatureDigits, v => Settings.TemperatureDigits = v);
+
+        var dim = GUILayout.Toggle(Settings.DimUntrusted, (string)STRINGS.UI.DIM);
+        if (dim != Settings.DimUntrusted) Settings.DimUntrusted = dim;
+
+        GUILayout.Label((string)STRINGS.UI.HINT);
+        if (GUILayout.Button((string)STRINGS.UI.CLOSE)) open = false;
+        GUI.DragWindow();
+    }
+
+    private static void Digits(string label, int value, System.Action<int> set)
+    {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(label, GUILayout.Width(190f));
+        var shown = value == 0 ? (string)STRINGS.UI.OFF : value.ToString();
+        GUILayout.Label(shown, GUILayout.Width(30f));
+        var next = Mathf.RoundToInt(GUILayout.HorizontalSlider(value, 0f, Settings.MaxDigits, GUILayout.Width(90f)));
+        GUILayout.EndHorizontal();
+        if (next != value) set(next);
+    }
+}
