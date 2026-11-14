@@ -2,12 +2,14 @@ using UnityEngine;
 
 namespace PrecisionReadout.Ui;
 
-// A small draggable IMGUI window (Ctrl+F7). Changes apply immediately and are saved by Settings.
+// A small draggable IMGUI window (hotkey: see ModActions, rebindable in the key bindings screen). Changes apply immediately and are saved by Settings.
 public sealed class SettingsPanel : MonoBehaviour
 {
     private const int WindowId = 0x50524552; // "PREC"
     private Rect window = new Rect(40f, 120f, 330f, 150f);
     private bool open;
+
+    internal bool IsOpen => open;
 
     private static Texture2D backing;
 
@@ -57,8 +59,7 @@ public sealed class SettingsPanel : MonoBehaviour
 
     private void Update()
     {
-        var ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-        if (ctrl && Input.GetKeyDown(KeyCode.F7)) open = !open;
+        if (ModActions.TogglePressed()) open = !open;
         SyncBlocker();
 
         var scale = Mathf.Max(1f, Screen.height / 1080f);
@@ -104,7 +105,7 @@ public sealed class SettingsPanel : MonoBehaviour
         var dim = GUILayout.Toggle(Settings.DimUntrusted, (string)STRINGS.UI.DIM);
         if (dim != Settings.DimUntrusted) Settings.DimUntrusted = dim;
 
-        GUILayout.Label((string)STRINGS.UI.HINT);
+        GUILayout.Label(string.Format((string)STRINGS.UI.HINT, ModActions.KeyName()));
         if (GUILayout.Button((string)STRINGS.UI.CLOSE)) open = false;
         GUI.DragWindow();
     }

@@ -71,6 +71,15 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" />
+        <PackageReference Include="PLib" Version="4.25.0">
+            <CopyLocal>true</CopyLocal>
+            <IncludeAssets>all</IncludeAssets>
+            <PrivateAssets>none</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
         <None Update="mod_info.yaml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
@@ -89,17 +98,32 @@
         <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
 
+    <!-- PLib is merged into the mod DLL so the mod ships as a single file. -->
+    <Target Name="MergeAssemblies" AfterTargets="PostBuildEvent" Condition="Exists('$(TargetDir)PLib.dll')">
+        <PropertyGroup>
+            <ILRepackExe>$(NuGetPackageRoot)ilrepack.msbuild.task\2.0.13\tools\ilrepack.exe</ILRepackExe>
+            <ILRepackDebugFlag Condition="'$(Configuration)' == 'Release'">/ndebug</ILRepackDebugFlag>
+            <!-- Debug builds reference the harness assembly (not merged); ILRepack has to be able to resolve it. -->
+            <ILRepackHarnessLib Condition="'$(Configuration)' == 'Debug' and '$(HarnessDllPath)' != ''">/lib:&quot;$([System.IO.Path]::GetDirectoryName('$(HarnessDllPath)'))&quot;</ILRepackHarnessLib>
+        </PropertyGroup>
+        <RemoveDir Directories="$(TargetDir)merged" />
+        <MakeDir Directories="$(TargetDir)merged" />
+        <Exec Command="&quot;$(ILRepackExe)&quot; /parallel $(ILRepackDebugFlag) $(ILRepackHarnessLib) /lib:&quot;$(GameManagedPath)&quot; /out:&quot;$(TargetDir)merged\$(TargetFileName)&quot; &quot;$(TargetPath)&quot; &quot;$(TargetDir)PLib.dll&quot;" />
+    </Target>
+
     <!-- Debug builds go to the local mods folder (ModInstallPath) for development. -->
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(ModInstallPath)' != '' and '$(Configuration)' != 'Release'">
+    <Target Name="PostBuild" AfterTargets="MergeAssemblies" Condition="'$(ModInstallPath)' != '' and '$(Configuration)' != 'Release'">
         <MakeDir Directories="$(ModInstallPath)" />
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModInstallPath)" />
-        <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
+        <Delete Files="$(ModInstallPath)\PLib.dll" Condition="Exists('$(ModInstallPath)\PLib.dll')" />
+        <Copy SourceFiles="$(TargetDir)merged\$(TargetFileName)" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(TargetDir)merged\$(TargetFileName)')" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModInstallPath)" Condition="!Exists('$(TargetDir)merged\$(TargetFileName)')" />
+        <Copy SourceFiles="$(TargetDir)merged\$(TargetName).pdb" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(TargetDir)merged\$(TargetName).pdb')" />
         <Copy SourceFiles="$(ProjectDir)mod_info.yaml" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(ProjectDir)mod_info.yaml')" />
         <ItemGroup>
-            <ModTranslationFiles Include="$(ProjectDir)translations\*.po" />
+            <ModStringFiles Include="$(ProjectDir)strings\*.po" />
         </ItemGroup>
-        <MakeDir Directories="$(ModInstallPath)\translations" Condition="'@(ModTranslationFiles)' != ''" />
-        <Copy SourceFiles="@(ModTranslationFiles)" DestinationFolder="$(ModInstallPath)\translations" Condition="'@(ModTranslationFiles)' != ''" />
+        <MakeDir Directories="$(ModInstallPath)\strings" Condition="'@(ModStringFiles)' != ''" />
+        <Copy SourceFiles="@(ModStringFiles)" DestinationFolder="$(ModInstallPath)\strings" Condition="'@(ModStringFiles)' != ''" />
         <Copy SourceFiles="$(ProjectDir)mod.yaml" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(ProjectDir)mod.yaml')" />
         <ItemGroup>
             <ModAssetFiles Include="$(ProjectDir)ModAssets\*.png" />
@@ -114,15 +138,16 @@
             <ReleaseDir>$(ProjectDir)..\release\$(TargetName)</ReleaseDir>
         </PropertyGroup>
         <ItemGroup>
-            <ReleaseTranslationFiles Include="$(ProjectDir)translations\*.po" />
+            <ReleaseTranslationFiles Include="$(ProjectDir)strings\*.po" />
             <ReleaseAssetFiles Include="$(ProjectDir)ModAssets\*.png" />
         </ItemGroup>
         <RemoveDir Directories="$(ReleaseDir)" />
         <MakeDir Directories="$(ReleaseDir)" />
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ReleaseDir)" />
+        <Copy SourceFiles="$(TargetDir)merged\$(TargetFileName)" DestinationFolder="$(ReleaseDir)" Condition="Exists('$(TargetDir)merged\$(TargetFileName)')" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ReleaseDir)" Condition="!Exists('$(TargetDir)merged\$(TargetFileName)')" />
         <Copy SourceFiles="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml" DestinationFolder="$(ReleaseDir)" />
         <Copy SourceFiles="$(ProjectDir)..\Workshop\preview.png" DestinationFolder="$(ReleaseDir)" Condition="Exists('$(ProjectDir)..\Workshop\preview.png')" />
-        <Copy SourceFiles="@(ReleaseTranslationFiles)" DestinationFolder="$(ReleaseDir)\translations" Condition="'@(ReleaseTranslationFiles)' != ''" />
+        <Copy SourceFiles="@(ReleaseTranslationFiles)" DestinationFolder="$(ReleaseDir)\strings" Condition="'@(ReleaseTranslationFiles)' != ''" />
         <Copy SourceFiles="@(ReleaseAssetFiles)" DestinationFolder="$(ReleaseDir)\ModAssets" Condition="'@(ReleaseAssetFiles)' != ''" />
     </Target>
 

@@ -36,6 +36,10 @@ msgctxt "PrecisionReadout.STRINGS.UI.CLOSE"
 msgid "Close"
 msgstr "閉じる"
 
+msgctxt "PrecisionReadout.STRINGS.UI.TOGGLE_ACTION"
+msgid "Toggle Precision Readout window"
+msgstr "高精度表示ウィンドウを開閉"
+
 msgctxt "PrecisionReadout.STRINGS.UI.HINT"
-msgid "0 = vanilla display. Toggle: Ctrl+F7"
-msgstr "0 = バニラ表示。開閉: Ctrl+F7"
+msgid "0 = vanilla display. Toggle: {0}"
+msgstr "0 = バニラ表示。開閉: {0}"

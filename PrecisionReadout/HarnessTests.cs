@@ -37,6 +37,46 @@ internal static class HarnessTests
         Check.Equal(1, patches.Count(p => p.PatchMethod.DeclaringType == patch), patch.Name + " on " + target.Name);
     }
 
+    // The hotkey is a PLib action: it has a default binding (Ctrl+F7), shows up as a bindable entry, and no other
+    // binding in this session (vanilla or any loaded mod) uses the same key with the same modifiers.
+    [HarnessTest(Name = "precisionreadout.hotkey_registered", Tags = "precisionreadout")]
+    public static void HotkeyRegistered()
+    {
+        var entry = GameInputMapping.FindEntry(ModActions.ToggleAction);
+        Check.True(entry.mAction == ModActions.ToggleAction, "the toggle action has no binding entry");
+        Check.True(entry.mRebindable, "the binding is not rebindable");
+        Check.Equal(KKeyCode.F7, entry.mKeyCode, "default key");
+        Check.Equal(Modifier.Ctrl, entry.mModifier, "default modifier");
+        Check.Equal("Ctrl+F7", ModActions.KeyName(), "key name shown in the window");
+
+        var clashes = GameInputMapping.KeyBindings
+            .Where(b => b.mAction != ModActions.ToggleAction && b.mKeyCode == entry.mKeyCode && b.mModifier == entry.mModifier)
+            .Select(b => b.mAction.ToString()).ToList();
+        Check.True(clashes.Count == 0, "same key as: " + string.Join(", ", clashes));
+    }
+
+    // Pressing the bound action opens the window, pressing it again closes it.
+    [HarnessTest(Name = "precisionreadout.hotkey_toggles_window", Tags = "precisionreadout", TimeoutSeconds = 30)]
+    public static System.Collections.IEnumerator HotkeyTogglesWindow()
+    {
+        var panel = UnityEngine.Object.FindObjectOfType<Ui.SettingsPanel>();
+        Check.NotNull(panel, "settings panel host");
+        Check.True(!panel.IsOpen, "window should start closed");
+        // The window polls the key state every frame, so hold the key across a few frames like a player does
+        // (Play.Press goes down and up within one input update, which no frame could see).
+        var (key, modifier) = Play.KeyFor(ModActions.ToggleAction);
+        Play.KeyDown(key, modifier);
+        for (var i = 0; i < 5; i++) yield return null;
+        Play.KeyUp(key, modifier);
+        for (var i = 0; i < 5; i++) yield return null;
+        Check.True(panel.IsOpen, "window did not open");
+        Play.KeyDown(key, modifier);
+        for (var i = 0; i < 5; i++) yield return null;
+        Play.KeyUp(key, modifier);
+        for (var i = 0; i < 5; i++) yield return null;
+        Check.True(!panel.IsOpen, "window did not close");
+    }
+
     // The exact expansion shows the value the float really holds, not a 15-digit zero padding.
     [HarnessTest(Name = "precisionreadout.mass_digits", Tags = "precisionreadout", RequiresGame = false)]
     public static void MassDigits()
