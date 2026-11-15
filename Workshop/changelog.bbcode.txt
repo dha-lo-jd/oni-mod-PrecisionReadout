@@ -1,5 +1,15 @@
 [h1]Changelog / 更新履歴[/h1]
 
+[h2]1.0.3[/h2]
+[b]English[/b]
+[list]
+[*] Fixed the key binding name of the toggle action not being translated.
+[/list]
+[b]日本語[/b]
+[list]
+[*] キー設定画面の操作名が翻訳されない問題を修正しました。
+[/list]
+
 [h2]1.0.2[/h2]
 [b]English[/b]
 [list]

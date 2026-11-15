@@ -1,3 +1,5 @@
+using System.Reflection;
+using HarmonyLib;
 using PeterHan.PLib.Actions;
 
 namespace PrecisionReadout;
@@ -8,13 +10,31 @@ internal static class ModActions
 {
     private static PAction toggle;
 
+    // The LocString object PLib holds as the action title. A translation replaces the STRINGS field with a new object, so
+    // this old one would keep the English text. Typed as object on purpose: the game scans every class in this namespace
+    // for LocString fields when it registers the strings, and would trip over a LocString field that is still null.
+    private static object toggleTitle;
+
+    private static readonly FieldInfo TextField = AccessTools.Field(typeof(LocString), "_text");
+
     internal static Action ToggleAction => toggle.GetKAction();
     private static bool wasDown;
 
     internal static void Register()
     {
+        toggleTitle = STRINGS.UI.TOGGLE_ACTION;
         toggle = new PActionManager().CreateAction("PrecisionReadout.Toggle", STRINGS.UI.TOGGLE_ACTION,
             new PKeyBinding(KKeyCode.F7, Modifier.Ctrl));
+    }
+
+    // Copies the translated action title into what PLib shows on the key bindings screen.
+    internal static void RefreshTitle()
+    {
+        var held = toggleTitle as LocString;
+        var current = STRINGS.UI.TOGGLE_ACTION;
+        if (held == null || current == null || toggle == null) return;
+        if (!ReferenceEquals(held, current) && TextField != null) TextField.SetValue(held, current.text);
+        Strings.Add("STRINGS.INPUT_BINDINGS.PLIB." + toggle.GetKAction().ToString().ToUpperInvariant(), current.text);
     }
 
     // True on the frame the bound key goes down. Polled from the always-active host, like the other PLib hotkey mods.
