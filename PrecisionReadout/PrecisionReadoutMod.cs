@@ -15,7 +15,7 @@ public sealed class PrecisionReadoutMod : UserMod2
         base.OnLoad(harmony);
         modPath = path;
         PUtil.InitLibrary();
-        new PLocalization().Register(); // strings/<language code>.po
+        new PLocalization().Register(); // translations/<language code>.po
         ModActions.Register();
         Settings.Load();
 
