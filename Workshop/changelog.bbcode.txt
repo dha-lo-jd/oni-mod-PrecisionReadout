@@ -1,0 +1,21 @@
+[h1]Changelog / 更新履歴[/h1]
+
+[h2]1.0.1[/h2]
+[b]English[/b]
+[list]
+[*] The number of decimal places can now go up to [b]30[/b] (it was 10) for both mass and temperature.
+[/list]
+[b]日本語[/b]
+[list]
+[*] 質量・温度とも、小数桁数を最大[b]30桁[/b]まで設定できるようにしました（従来は10桁まで）。
+[/list]
+
+[h2]1.0.0[/h2]
+[b]English[/b]
+[list]
+[*] First release.
+[/list]
+[b]日本語[/b]
+[list]
+[*] 初公開。
+[/list]
