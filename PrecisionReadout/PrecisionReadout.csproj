@@ -120,10 +120,10 @@
         <Copy SourceFiles="$(TargetDir)merged\$(TargetName).pdb" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(TargetDir)merged\$(TargetName).pdb')" />
         <Copy SourceFiles="$(ProjectDir)mod_info.yaml" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(ProjectDir)mod_info.yaml')" />
         <ItemGroup>
-            <ModStringFiles Include="$(ProjectDir)strings\*.po" />
+            <ModStringFiles Include="$(ProjectDir)translations\*.po" />
         </ItemGroup>
-        <MakeDir Directories="$(ModInstallPath)\strings" Condition="'@(ModStringFiles)' != ''" />
-        <Copy SourceFiles="@(ModStringFiles)" DestinationFolder="$(ModInstallPath)\strings" Condition="'@(ModStringFiles)' != ''" />
+        <MakeDir Directories="$(ModInstallPath)\translations" Condition="'@(ModStringFiles)' != ''" />
+        <Copy SourceFiles="@(ModStringFiles)" DestinationFolder="$(ModInstallPath)\translations" Condition="'@(ModStringFiles)' != ''" />
         <Copy SourceFiles="$(ProjectDir)mod.yaml" DestinationFolder="$(ModInstallPath)" Condition="Exists('$(ProjectDir)mod.yaml')" />
         <ItemGroup>
             <ModAssetFiles Include="$(ProjectDir)ModAssets\*.png" />
@@ -138,7 +138,7 @@
             <ReleaseDir>$(ProjectDir)..\release\$(TargetName)</ReleaseDir>
         </PropertyGroup>
         <ItemGroup>
-            <ReleaseTranslationFiles Include="$(ProjectDir)strings\*.po" />
+            <ReleaseTranslationFiles Include="$(ProjectDir)translations\*.po" />
             <ReleaseAssetFiles Include="$(ProjectDir)ModAssets\*.png" />
         </ItemGroup>
         <RemoveDir Directories="$(ReleaseDir)" />
@@ -147,7 +147,7 @@
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ReleaseDir)" Condition="!Exists('$(TargetDir)merged\$(TargetFileName)')" />
         <Copy SourceFiles="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml" DestinationFolder="$(ReleaseDir)" />
         <Copy SourceFiles="$(ProjectDir)..\Workshop\preview.png" DestinationFolder="$(ReleaseDir)" Condition="Exists('$(ProjectDir)..\Workshop\preview.png')" />
-        <Copy SourceFiles="@(ReleaseTranslationFiles)" DestinationFolder="$(ReleaseDir)\strings" Condition="'@(ReleaseTranslationFiles)' != ''" />
+        <Copy SourceFiles="@(ReleaseTranslationFiles)" DestinationFolder="$(ReleaseDir)\translations" Condition="'@(ReleaseTranslationFiles)' != ''" />
         <Copy SourceFiles="@(ReleaseAssetFiles)" DestinationFolder="$(ReleaseDir)\ModAssets" Condition="'@(ReleaseAssetFiles)' != ''" />
     </Target>
 

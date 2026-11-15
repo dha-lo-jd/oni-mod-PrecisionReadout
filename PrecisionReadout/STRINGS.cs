@@ -1,6 +1,6 @@
 namespace PrecisionReadout;
 
-// All user-visible text. Translations are loaded from strings/<language code>.po by PLib (see PrecisionReadoutMod).
+// All user-visible text. Translations are loaded from translations/<language code>.po by PLib (see PrecisionReadoutMod).
 public static class STRINGS
 {
     public static class UI
