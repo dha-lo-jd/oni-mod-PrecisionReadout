@@ -1,13 +1,13 @@
 [h1]Changelog / 更新履歴[/h1]
 
-[h2]1.0.4[/h2]
+[h2]1.1.0[/h2]
 [b]English[/b]
 [list]
-[*] Updated for the U60 release. Hover cards and the info panel show the exact values again. This version requires U60 (build 761211 or later).
+[*] Updated for the U60 release. Hover cards and the info panel show the exact values again. Requires U60 or later of the game.
 [/list]
 [b]日本語[/b]
 [list]
-[*] U60 に対応しました。ホバーカードと情報パネルで、再び正確な値が表示されます。この版には U60（ビルド 761211 以降）が必要です。
+[*] U60 に対応しました。ホバーカードと情報パネルで、再び正確な値が表示されます。ゲームの U60 以降が必要です。
 [/list]
 
 [h2]1.0.3[/h2]

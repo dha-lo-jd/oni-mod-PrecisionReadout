@@ -3,5 +3,5 @@ description: "Show mass and temperature with a configurable number of decimal pl
 requiredDlcIds: []
 forbiddenDlcIds: []
 minimumSupportedBuild: 763796
-version: "1.0.4"
+version: "1.1.0"
 APIVersion: 2
