@@ -1,5 +1,15 @@
 [h1]Changelog / 更新履歴[/h1]
 
+[h2]1.1.1[/h2]
+[b]English[/b]
+[list]
+[*] Now works on both U59 and U60 of the game (a U59 build is bundled and picked automatically). No change in behavior.
+[/list]
+[b]日本語[/b]
+[list]
+[*] ゲームの U59 と U60 の両方で動くようになりました（U59 用のビルドを同梱し、自動で選ばれます）。挙動は変わりません。
+[/list]
+
 [h2]1.1.0[/h2]
 [b]English[/b]
 [list]
