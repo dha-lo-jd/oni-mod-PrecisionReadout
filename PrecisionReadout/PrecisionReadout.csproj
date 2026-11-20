@@ -130,6 +130,10 @@
         </ItemGroup>
         <MakeDir Directories="$(ModInstallPath)\ModAssets" Condition="'@(ModAssetFiles)' != ''" />
         <Copy SourceFiles="@(ModAssetFiles)" DestinationFolder="$(ModInstallPath)\ModAssets" Condition="'@(ModAssetFiles)' != ''" />
+        <ItemGroup>
+            <ArchivedFiles Include="$(ProjectDir)../archived_versions\**\*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(ArchivedFiles)" DestinationFiles="@(ArchivedFiles->'$(ModInstallPath)/archived_versions\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(ArchivedFiles)' != ''" />
     </Target>
 
     <!-- Release builds produce a clean distribution folder: <repo>\release\PrecisionReadout (git-ignored). -->
@@ -140,6 +144,7 @@
         <ItemGroup>
             <ReleaseTranslationFiles Include="$(ProjectDir)translations\*.po" />
             <ReleaseAssetFiles Include="$(ProjectDir)ModAssets\*.png" />
+            <ReleaseArchivedFiles Include="$(ProjectDir)../archived_versions\**\*" />
         </ItemGroup>
         <RemoveDir Directories="$(ReleaseDir)" />
         <MakeDir Directories="$(ReleaseDir)" />
@@ -149,6 +154,7 @@
         <Copy SourceFiles="$(ProjectDir)..\Workshop\preview.png" DestinationFolder="$(ReleaseDir)" Condition="Exists('$(ProjectDir)..\Workshop\preview.png')" />
         <Copy SourceFiles="@(ReleaseTranslationFiles)" DestinationFolder="$(ReleaseDir)\translations" Condition="'@(ReleaseTranslationFiles)' != ''" />
         <Copy SourceFiles="@(ReleaseAssetFiles)" DestinationFolder="$(ReleaseDir)\ModAssets" Condition="'@(ReleaseAssetFiles)' != ''" />
+        <Copy SourceFiles="@(ReleaseArchivedFiles)" DestinationFiles="@(ReleaseArchivedFiles->'$(ReleaseDir)/archived_versions\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(ReleaseArchivedFiles)' != ''" />
     </Target>
 
 </Project>
